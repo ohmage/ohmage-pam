@@ -1,4 +1,4 @@
 ohmagePAM
 =========
 
-This is the PAM (Photographic Affect Meter) from JP at Cornell.
+This is the PAM code (Photographic Affect Meter) from JP at Cornell.
