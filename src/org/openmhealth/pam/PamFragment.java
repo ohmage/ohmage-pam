@@ -36,7 +36,7 @@ public class PamFragment extends Fragment {
     private static final int TWO_MINUTES = 1000 * 60 * 2;
     private Button reload;
     private GridView gridview;
-    private View prevSelection;
+    private int selection = GridView.INVALID_POSITION;
     private Button submit;
 
     public static final String[] IMAGE_FOLDERS = new String[] {
@@ -228,10 +228,14 @@ public class PamFragment extends Fragment {
                     imageView = new ImageView(getActivity());
                     imageView.setLayoutParams(new GridView.LayoutParams(width / 4, width / 4));
                     imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                    imageView.setColorFilter(null);
                 } else {
                     imageView = (ImageView) convertView;
                 }
                 imageView.setImageBitmap(images[position]);
+
+                if (position == selection)
+                    highlightSelection(imageView);
 
                 return imageView;
             }
@@ -240,12 +244,16 @@ public class PamFragment extends Fragment {
         gridview.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                if (null != prevSelection)
-                    ((ImageView) prevSelection).setColorFilter(null);
-                ((ImageView) v).setColorFilter(0xffff9933, PorterDuff.Mode.MULTIPLY);
-                prevSelection = v;
+                if (selection != GridView.INVALID_POSITION)
+                    ((ImageView) parent.getChildAt(selection)).setColorFilter(null);
+                highlightSelection(v);
+                selection = position;
                 pam_photo_id = IMAGE_FOLDERS[position].split("_")[1];
             }
         });
+    }
+
+    private void highlightSelection(View v) {
+        ((ImageView) v).setColorFilter(0xffff9933, PorterDuff.Mode.MULTIPLY);
     }
 }
