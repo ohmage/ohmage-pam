@@ -1,7 +1,9 @@
 
 package org.openmhealth.pam;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,6 +24,9 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.Random;
 
@@ -38,6 +43,12 @@ public class PamFragment extends Fragment {
     private GridView gridview;
     private int selection = GridView.INVALID_POSITION;
     private Button submit;
+    private PamProbeWriter mProbeWriter;
+
+    /**
+     * If true, we will send the response to ohmage with the probe writer
+     */
+    private boolean mSendResponse = false;
 
     public static final String[] IMAGE_FOLDERS = new String[] {
             "1_afraid",
@@ -57,6 +68,12 @@ public class PamFragment extends Fragment {
             "15_sleepy",
             "16_serene"
     };
+
+    public static PamFragment getInstance(boolean sendResponse) {
+        PamFragment fragment = new PamFragment();
+        fragment.mSendResponse = sendResponse;
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,6 +99,8 @@ public class PamFragment extends Fragment {
         } else {
             userLocation = netloc;
         }
+
+        mProbeWriter = new PamProbeWriter(getActivity());
     }
 
     @Override
@@ -108,7 +127,18 @@ public class PamFragment extends Fragment {
                             Toast.LENGTH_SHORT);
                     toast.show();
                 } else {
-                    // Submit response to ohmage
+                    if(mSendResponse)
+                        mProbeWriter.writeResponse(userLocation, buildResponseJson(pam_photo_id));
+
+                    //Send photo id as the result of this activity
+                    Bundle extras = new Bundle();
+                    extras.putDouble("score", Double.valueOf(pam_photo_id.split("_")[0]));
+                    extras.putString("photo_id", pam_photo_id.split("_")[1]);
+                    extras.putString("feedback", "You selected: " + pam_photo_id.split("_")[1]);
+                    Intent results = new Intent();
+                    results.putExtras(extras);
+                    getActivity().setResult(Activity.RESULT_OK, results);
+                    getActivity().finish();
                 }
             }
         });
@@ -248,12 +278,24 @@ public class PamFragment extends Fragment {
                     ((ImageView) parent.getChildAt(selection)).setColorFilter(null);
                 highlightSelection(v);
                 selection = position;
-                pam_photo_id = IMAGE_FOLDERS[position].split("_")[1];
+                pam_photo_id = IMAGE_FOLDERS[position];
             }
         });
     }
 
     private void highlightSelection(View v) {
         ((ImageView) v).setColorFilter(0xffff9933, PorterDuff.Mode.MULTIPLY);
+    }
+
+    protected JSONObject buildResponseJson(String photoId) {
+        JSONObject photo = new JSONObject();
+        try {
+            photo.put("score", Integer.valueOf(pam_photo_id.split("_")[0]));
+            photo.put("photo_id", pam_photo_id.split("_")[1]);
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return photo;
     }
 }

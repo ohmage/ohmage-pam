@@ -19,6 +19,9 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="org.openmhealth.pam.ACTION_CHOOSE_IMAGE" />
+            </intent-filter>
         </activity>
     </application>
 

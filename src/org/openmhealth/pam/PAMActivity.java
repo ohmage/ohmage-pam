@@ -11,7 +11,9 @@ public class PAMActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            PamFragment details = new PamFragment();
+            PamFragment details = PamFragment
+                    .getInstance(!"org.openmhealth.pam.ACTION_CHOOSE_IMAGE".equals(getIntent()
+                            .getAction()));
             details.setArguments(getIntent().getExtras());
             getSupportFragmentManager().beginTransaction().add(android.R.id.content, details)
                     .commit();
