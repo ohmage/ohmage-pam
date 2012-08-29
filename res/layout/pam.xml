@@ -5,8 +5,9 @@
     <GridView
         android:id="@+id/pam_grid"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/pam_reload"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:listSelector="@null"
         android:numColumns="4" >
     </GridView>
 
