@@ -85,7 +85,7 @@ public class PamFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(mProbeWriter != null)
+        if (mProbeWriter != null)
             mProbeWriter.close();
     }
 
@@ -135,7 +135,7 @@ public class PamFragment extends Fragment {
                             Toast.LENGTH_SHORT);
                     toast.show();
                 } else {
-                    if(mSendResponse)
+                    if (mSendResponse)
                         mProbeWriter.writeResponse(userLocation, buildResponseJson(pam_photo_id));
 
                     Bundle extras = buildResponseBundle(pam_photo_id);
