@@ -228,7 +228,7 @@ public class PamFragment extends Fragment {
             subFolder = "pam_images/" + IMAGE_FOLDERS[i];
             try {
                 images[i] = BitmapFactory.decodeStream(assets.open(subFolder + "/"
-                        + assets.list(subFolder)[random.nextInt(2)]));
+                        + assets.list(subFolder)[random.nextInt(3)]));
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
