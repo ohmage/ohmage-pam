@@ -32,6 +32,7 @@ import java.util.Random;
 
 public class PamFragment extends Fragment {
     Bitmap[] images;
+    int[] imageIds;
     private final Random random = new Random();
 
     private static LocationManager locationManager;
@@ -137,10 +138,7 @@ public class PamFragment extends Fragment {
                     if(mSendResponse)
                         mProbeWriter.writeResponse(userLocation, buildResponseJson(pam_photo_id));
 
-                    //Send photo id as the result of this activity
-                    Bundle extras = new Bundle();
-                    extras.putDouble("score", Double.valueOf(pam_photo_id.split("_")[0]));
-                    extras.putString("photo_id", pam_photo_id.split("_")[1]);
+                    Bundle extras = buildResponseBundle(pam_photo_id);
                     extras.putString("feedback", "You selected: " + pam_photo_id.split("_")[1]);
                     Intent results = new Intent();
                     results.putExtras(extras);
@@ -221,14 +219,16 @@ public class PamFragment extends Fragment {
 
     private void loadImages() {
         images = new Bitmap[IMAGE_FOLDERS.length];
+        imageIds = new int[IMAGE_FOLDERS.length];
 
         AssetManager assets = getResources().getAssets();
         String subFolder;
         for (int i = 0; i < IMAGE_FOLDERS.length; i++) {
             subFolder = "pam_images/" + IMAGE_FOLDERS[i];
             try {
-                images[i] = BitmapFactory.decodeStream(assets.open(subFolder + "/"
-                        + assets.list(subFolder)[random.nextInt(3)]));
+                String filename = assets.list(subFolder)[random.nextInt(3)];
+                images[i] = BitmapFactory.decodeStream(assets.open(subFolder + "/" + filename));
+                imageIds[i] = filename.split("_")[1].charAt(0) - '0';
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -297,12 +297,27 @@ public class PamFragment extends Fragment {
     protected JSONObject buildResponseJson(String photoId) {
         JSONObject photo = new JSONObject();
         try {
-            photo.put("score", Integer.valueOf(pam_photo_id.split("_")[0]));
-            photo.put("photo_id", pam_photo_id.split("_")[1]);
+            int idx = Integer.valueOf(pam_photo_id.split("_")[0]);
+            photo.put("score", idx);
+            photo.put("photo_id", idx);
+            photo.put("sub_photo_id", imageIds[idx-1]);
+            photo.put("mood", pam_photo_id.split("_")[1]);
         } catch (JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return photo;
+    }
+
+    protected Bundle buildResponseBundle(String photoId) {
+        // Send photo id as the result of this activity
+        Bundle extras = new Bundle();
+
+        int idx = Integer.valueOf(pam_photo_id.split("_")[0]);
+        extras.putDouble("score", idx);
+        extras.putInt("photo_id", idx);
+        extras.putInt("sub_photo_id", imageIds[idx-1]);
+        extras.putString("mood", pam_photo_id.split("_")[1]);
+        return extras;
     }
 }
