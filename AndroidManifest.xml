@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.openmhealth.pam"
-    android:versionCode="2"
-    android:versionName="1.0.1" >
+    android:versionCode="3"
+    android:versionName="1.0.2" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -21,6 +21,13 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="org.openmhealth.pam.ACTION_CHOOSE_IMAGE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:path="choose_image"
+                    android:scheme="org.openmhealth.pam" />
             </intent-filter>
         </activity>
     </application>
