@@ -1,6 +1,15 @@
 
 package org.openmhealth.pam;
 
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Random;
+import java.util.TimeZone;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.openmhealth.android.pam.R;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -23,12 +32,8 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.Random;
+import edu.cornell.tech.smalldata.omhclientlib.schema.PamSchema;
+import edu.cornell.tech.smalldata.omhclientlib.services.OmhDsuWriter;
 
 public class PamFragment extends Fragment {
     Bitmap[] images;
@@ -113,7 +118,7 @@ public class PamFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.pam, container, false);
+    	View view = inflater.inflate(R.layout.pam, container, false);
 
         gridview = (GridView) view.findViewById(R.id.pam_grid);
         reload = (Button) view.findViewById(R.id.pam_reload);
@@ -137,6 +142,8 @@ public class PamFragment extends Fragment {
                 } else {
                     if (mSendResponse)
                         mProbeWriter.writeResponse(userLocation, buildResponseJson(pam_photo_id));
+                    
+                    writeResponseToOmhDsu();
 
                     Bundle extras = buildResponseBundle(pam_photo_id);
                     extras.putString("feedback", "You selected: " + pam_photo_id.split("_")[1]);
@@ -320,4 +327,13 @@ public class PamFragment extends Fragment {
         extras.putString("mood", pam_photo_id.split("_")[1]);
         return extras;
     }
+
+	private void writeResponseToOmhDsu() {
+		
+		int idx = Integer.valueOf(pam_photo_id.split("_")[0]);
+		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));;
+		PamSchema pamSchema = new PamSchema(idx, calendar);
+		
+		OmhDsuWriter.writeDataPoint(getActivity(), pamSchema);
+	}
 }
