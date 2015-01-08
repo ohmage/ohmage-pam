@@ -19,6 +19,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
+import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -140,7 +142,7 @@ public class PamFragment extends Fragment {
                             Toast.LENGTH_SHORT);
                     toast.show();
                 } else {
-                    if (mSendResponse)
+                    if (mSendResponse && (VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP))
                         mProbeWriter.writeResponse(userLocation, buildResponseJson(pam_photo_id));
                     
                     writeResponseToOmhDsu();
