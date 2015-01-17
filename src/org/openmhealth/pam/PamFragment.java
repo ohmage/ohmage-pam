@@ -92,8 +92,10 @@ public class PamFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mProbeWriter != null)
-            mProbeWriter.close();
+        if ((VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
+			if (mProbeWriter != null)
+				mProbeWriter.close();
+		}
     }
 
     @Override
@@ -115,7 +117,9 @@ public class PamFragment extends Fragment {
             userLocation = netloc;
         }
 
-        mProbeWriter = new PamProbeWriter(getActivity());
+        if ((VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
+			mProbeWriter = new PamProbeWriter(getActivity());
+		}
     }
 
     @Override
