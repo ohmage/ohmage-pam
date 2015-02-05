@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.openmhealth.android.pam"
-    android:versionCode="101003"
+    android:versionCode="101005"
     android:versionName="@string/pam_version_name" >
 
     <uses-sdk
