@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.openmhealth.android.pam"
-    android:versionCode="101005"
+    android:versionCode="101006"
     android:versionName="@string/pam_version_name" >
 
     <uses-sdk
@@ -12,6 +12,9 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -55,6 +58,33 @@
             android:enabled="true"
             android:exported="false" >
         </service>
+        <service android:name="edu.cornell.tech.smalldata.omhclientlib.syncadapter.AuthenticatorService" >
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+        <service
+            android:name="edu.cornell.tech.smalldata.omhclientlib.syncadapter.SyncAdapterService"
+            android:exported="true"
+            android:process=":sync" >
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
+
+        <provider
+            android:name="edu.cornell.tech.smalldata.omhclientlib.syncadapter.SyncAdapterContentProvider"
+            android:authorities="@string/omhclientlib_syncadapter_provider_authority"
+            android:exported="false"
+            android:syncable="true" />
     </application>
 
 </manifest>
