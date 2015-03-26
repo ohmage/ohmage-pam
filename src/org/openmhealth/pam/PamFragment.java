@@ -8,8 +8,11 @@ import java.util.TimeZone;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openmhealth.android.pam.R;
+import org.openmhealth.utils.reminders.Reminder;
+import org.openmhealth.utils.reminders.ReminderListActivity;
+import org.openmhealth.utils.reminders.ReminderManager;
 
+import io.smalldatalab.android.pam.R;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -34,6 +37,8 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
+import edu.cornell.tech.smalldata.omhclientlib.dsu.DSUAuth;
+import edu.cornell.tech.smalldata.omhclientlib.dsu.DSUClient;
 import edu.cornell.tech.smalldata.omhclientlib.schema.PamSchema;
 import edu.cornell.tech.smalldata.omhclientlib.services.OmhDsuWriter;
 
@@ -42,21 +47,17 @@ public class PamFragment extends Fragment {
     int[] imageIds;
     private final Random random = new Random();
 
-    private static LocationManager locationManager;
+//    private static LocationManager locationManager;
     private static String pam_photo_id;
-    private static Location userLocation;
+//    private static Location userLocation;
 
     private static final int TWO_MINUTES = 1000 * 60 * 2;
-    private Button reload;
-    private GridView gridview;
     private int selection = GridView.INVALID_POSITION;
+    private GridView gridview;
     private Button submit;
-    private PamProbeWriter mProbeWriter;
-
-    /**
-     * If true, we will send the response to ohmage with the probe writer
-     */
-    private boolean mSendResponse = false;
+    private Button logout;
+    private Button reload;
+    private Button reminders;
 
     public static final String[] IMAGE_FOLDERS = new String[] {
             "1_afraid",
@@ -79,7 +80,6 @@ public class PamFragment extends Fragment {
 
     public static PamFragment getInstance(boolean sendResponse) {
         PamFragment fragment = new PamFragment();
-        fragment.mSendResponse = sendResponse;
         return fragment;
     }
 
@@ -92,39 +92,31 @@ public class PamFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if ((VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
-			if (mProbeWriter != null)
-				mProbeWriter.close();
-		}
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         setRetainInstance(true);
 
-        locationManager = (LocationManager)
-                getActivity().getSystemService(Context.LOCATION_SERVICE);
-        Location gpsloc =
-                locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        Location netloc =
-                locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-        if (isBetterLocation(gpsloc, netloc)) {
-            userLocation = gpsloc;
-        } else {
-            userLocation = netloc;
-        }
-
-        if ((VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
-			mProbeWriter = new PamProbeWriter(getActivity());
-		}
+        // TODO JARED: is location used anymore, without ProbeLibrary?
+//        locationManager = (LocationManager)
+//                getActivity().getSystemService(Context.LOCATION_SERVICE);
+//        Location gpsloc =
+//                locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//        Location netloc =
+//                locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//
+//        if (isBetterLocation(gpsloc, netloc)) {
+//            userLocation = gpsloc;
+//        } else {
+//            userLocation = netloc;
+//        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    	View view = inflater.inflate(R.layout.pam, container, false);
+    	View view = inflater.inflate(R.layout.fragment_pam, container, false);
 
         gridview = (GridView) view.findViewById(R.id.pam_grid);
         reload = (Button) view.findViewById(R.id.pam_reload);
@@ -145,25 +137,54 @@ public class PamFragment extends Fragment {
                     Toast toast = Toast.makeText(getActivity(), "Please select a picture!",
                             Toast.LENGTH_SHORT);
                     toast.show();
-                } else {
-                    if (mSendResponse && (VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP))
-                        mProbeWriter.writeResponse(userLocation, buildResponseJson(pam_photo_id));
-                    
-                    writeResponseToOmhDsu();
-
-                    Bundle extras = buildResponseBundle(pam_photo_id);
-                    extras.putString("feedback", "You selected: " + pam_photo_id.split("_")[1]);
-                    Intent results = new Intent();
-                    results.putExtras(extras);
-                    getActivity().setResult(Activity.RESULT_OK, results);
-                    getActivity().finish();
+                } else {                    
+                    onSubmit();
                 }
             }
+        });
+        logout = (Button) view.findViewById(R.id.pam_logout);
+        logout.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				DSUClient.logout(getActivity(), DSUAuth.ACCOUNT_TYPE);
+				ReminderManager mReminderManager = new ReminderManager(getActivity());
+				mReminderManager.removeAllReminders();
+				Toast.makeText(getActivity(), "Logging out. Reopen the app to login as a new user", 
+						Toast.LENGTH_LONG).show();
+				getActivity().finish();
+			}
+        	
+        });
+        reminders = (Button) view.findViewById(R.id.pam_reminders);
+        reminders.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				final Intent intent = new Intent(getActivity(), ReminderListActivity.class);
+				getActivity().startActivity(intent);
+				
+//				ReminderManager rMan = new ReminderManager(getActivity());
+//				Reminder reminder = new Reminder();
+//				rMan.scheduleReminder(reminder);
+			}
+        	
         });
 
         setupPAM();
 
         return view;
+    }
+    
+    private void onSubmit(){
+    	int idx = Integer.valueOf(pam_photo_id.split("_")[0]);
+		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));;
+		PamSchema pamSchema = new PamSchema(idx, calendar);
+		
+		// TODO JARED: move this to ContentProvider here? or within the Writer?
+		OmhDsuWriter.writeDataPointAsync(getActivity(), pamSchema);
+		Toast.makeText(getActivity(), "Thank you. Your response is being saved.", Toast.LENGTH_LONG).show();
+        getActivity().finish();
     }
 
     /**
@@ -307,39 +328,31 @@ public class PamFragment extends Fragment {
         ((ImageView) v).setColorFilter(0xffff9933, PorterDuff.Mode.MULTIPLY);
     }
 
-    protected JSONObject buildResponseJson(String photoId) {
-        JSONObject photo = new JSONObject();
-        try {
-            int idx = Integer.valueOf(pam_photo_id.split("_")[0]);
-            photo.put("score", idx);
-            photo.put("photo_id", idx);
-            photo.put("sub_photo_id", imageIds[idx-1]);
-            photo.put("mood", pam_photo_id.split("_")[1]);
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return photo;
-    }
+//    protected JSONObject buildResponseJson(String photoId) {
+//        JSONObject photo = new JSONObject();
+//        try {
+//            int idx = Integer.valueOf(pam_photo_id.split("_")[0]);
+//            photo.put("score", idx);
+//            photo.put("photo_id", idx);
+//            photo.put("sub_photo_id", imageIds[idx-1]);
+//            photo.put("mood", pam_photo_id.split("_")[1]);
+//        } catch (JSONException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        return photo;
+//    }
 
-    protected Bundle buildResponseBundle(String photoId) {
-        // Send photo id as the result of this activity
-        Bundle extras = new Bundle();
+//    protected Bundle buildResponseBundle(String photoId) {
+//        // Send photo id as the result of this activity
+//        Bundle extras = new Bundle();
+//
+//        int idx = Integer.valueOf(pam_photo_id.split("_")[0]);
+//        extras.putDouble("score", idx);
+//        extras.putInt("photo_id", idx);
+//        extras.putInt("sub_photo_id", imageIds[idx-1]);
+//        extras.putString("mood", pam_photo_id.split("_")[1]);
+//        return extras;
+//    }
 
-        int idx = Integer.valueOf(pam_photo_id.split("_")[0]);
-        extras.putDouble("score", idx);
-        extras.putInt("photo_id", idx);
-        extras.putInt("sub_photo_id", imageIds[idx-1]);
-        extras.putString("mood", pam_photo_id.split("_")[1]);
-        return extras;
-    }
-
-	private void writeResponseToOmhDsu() {
-		
-		int idx = Integer.valueOf(pam_photo_id.split("_")[0]);
-		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));;
-		PamSchema pamSchema = new PamSchema(idx, calendar);
-		
-		OmhDsuWriter.writeDataPoint(getActivity(), pamSchema);
-	}
 }

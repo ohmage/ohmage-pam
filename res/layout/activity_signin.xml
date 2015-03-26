@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="You must sign in to access the app." />
+
+   <com.google.android.gms.common.SignInButton
+	    android:id="@+id/sign_in_button"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content" />
+
+   <TextView 
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:id="@+id/dsu_url"/>
+</LinearLayout>

@@ -3,12 +3,12 @@
 
     <string name="dsu_root_url">https://ohmage-omh.smalldata.io/dsu</string>
     
-    <string name="apps_dsu_client_id">org.openmhealth.android.pam</string>
+    <string name="apps_dsu_client_id">io.smalldata.android.pam</string>
     
     <string name="apps_dsu_client_secret">5Eo43jkLD7z76c</string>
     
     <string name="acquisition_provenance_source_name">ohmagePAM</string>
     
-    <string name="omhclientlib_syncadapter_provider_authority">org.openmhealth.android.pam.omhclientlib.syncadapter.provider</string>
+    <string name="omhclientlib_syncadapter_provider_authority">io.smalldata.android.pam.provider</string>
 
 </resources>
