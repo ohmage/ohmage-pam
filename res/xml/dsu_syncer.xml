@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<sync-adapter
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:accountType="io.smalldata.dsu.pam"
-    android:contentAuthority="io.smalldata.android.pam.provider"
-    android:userVisible="true"
-    android:supportsUploading="true"
-    android:allowParallelSyncs="false"
-    android:isAlwaysSyncable="true"/>
