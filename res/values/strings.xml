@@ -1,6 +1,0 @@
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-
-    <string name="app_name">PAM</string>
-    <string name="pam_version_name">1.1.11</string>
-
-</resources>

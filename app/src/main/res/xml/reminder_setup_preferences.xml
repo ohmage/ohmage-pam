@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="enable_reminder"
+        android:title="@string/reminder_enable_title"
+        android:persistent="false"
+        android:summary="@string/reminder_enable_summary" />
+    
+    <org.openmhealth.utils.reminders.TimePickerPreference
+        android:key="reminder_time"
+        android:persistent="false"
+        android:title="@string/reminder_time_title"
+        android:summary="Not selected" />
+
+    <!--  
+    <Preference
+        android:key="repeat_days"
+        android:title="@string/reminder_repeat_title"
+        android:persistent="false"
+        android:summary="Everyday" />
+	-->
+</PreferenceScreen>

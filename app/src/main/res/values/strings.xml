@@ -1,0 +1,22 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
+    <string name="app_name">PAM</string>
+    <string name="pam_version_name">2.02</string>
+
+
+    <!-- for omhclientlib -->
+    <string name="dsu_provider_authorities">io.smalldatalab.android.pam.account</string>
+
+    <!--dsu settings-->
+    <string name="dsu_client_id">io.smalldatalab.android.pam</string>
+    <string name="dsu_client_secret">fMNqTw27vwltUqHceFUgqLkHplxuv2vROBpuoy4GkoPVTuFCsV</string>
+    <string name="dsu_client_url">https://ohmage-omh.smalldata.io/dsu</string>
+
+    <!--omh schema settings -->
+    <string name="schema_namespace">cornell</string>
+    <string name="schema_name">photographic-affect-meter-scores</string>
+    <string name="schema_version">1.0</string>
+    <string name="acquisition_source_name">PAM-Android</string>
+    <string name="acquisition_modality">self-reported</string>
+
+</resources>
