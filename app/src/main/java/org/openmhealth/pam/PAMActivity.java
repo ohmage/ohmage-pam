@@ -8,7 +8,6 @@ import io.smalldatalab.omhclient.DSUClient;
 
 
 public class PAMActivity extends FragmentActivity {
-    private DSUClient mDSUClient;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

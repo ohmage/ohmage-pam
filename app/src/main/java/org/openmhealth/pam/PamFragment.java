@@ -150,9 +150,10 @@ public class PamFragment extends Fragment {
                 }
                 ReminderManager mReminderManager = new ReminderManager(getActivity());
                 mReminderManager.removeAllReminders();
-                Toast.makeText(getActivity(), "Logging out. Reopen the app to login as a new user",
+                Toast.makeText(getActivity(), "Signed out.",
                         Toast.LENGTH_LONG).show();
-                getActivity().finish();
+                Intent mIntent = new Intent(getActivity(), SigninActivity.class);
+                PamFragment.this.startActivity(mIntent);
             }
 
         });
