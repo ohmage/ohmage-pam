@@ -30,7 +30,7 @@ public class ReminderListActivity extends ListActivity {
 		// Fetch the existing reminders
 		ReminderManager mReminderManager = new ReminderManager(this);
 		reminders = mReminderManager.getAllReminders();
-		
+
 		// Setup all the view elements
 		addBtn = (Button) this.findViewById(R.id.add_reminder);
 		addBtn.setOnClickListener(new OnClickListener(){

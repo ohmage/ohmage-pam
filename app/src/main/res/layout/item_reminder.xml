@@ -9,8 +9,6 @@
     <TwoLineListItem
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/button_actions_edit"
-        android:layout_toRightOf="@+id/icon_trigger_type"
         android:mode="twoLine"
         android:paddingBottom="8dip"
         android:paddingTop="5dip">
